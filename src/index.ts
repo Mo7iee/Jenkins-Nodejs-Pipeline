@@ -8,19 +8,32 @@ import cartRoute from "./routes/cartRoute.js";
 const app = express();
 const port = 3001;
 
-app.use(express.json())
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Hello from Mohie!!!!!!!!!!!!!!!!!!!!!");
+});
+
+const mongoUri = process.env.MONGO_URI;
+
+if (!mongoUri) {
+  throw new Error("MONGO_URI not defined");
+}
 
 mongoose
-  .connect("mongodb://localhost:27017/ecommerce")
-  .then(() => console.log("Mongo Connected!"));
+  .connect(mongoUri)
+  .then(async () => {
+    console.log("MongoDB connected");
 
-app.use('/user',userRoute)
-app.use('/products',productRoute)
-app.use('/cart',cartRoute)
+    try {
+      await seedProducts();
+      console.log("Products seeded");
+    } catch (err) {
+      console.error("Seeding failed:", err);
+    }
 
-
-seedProducts();
-
-app.listen(port, () => {
-  console.log("Server is running");
-});
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));
