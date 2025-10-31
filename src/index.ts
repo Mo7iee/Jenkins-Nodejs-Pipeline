@@ -14,6 +14,10 @@ app.get("/", (req, res) => {
   res.send("Hello from Mohie!!!!!!!!!!!!!!!!!!!!!");
 });
 
+app.use('/user',userRoute)
+app.use('/products',productRoute)
+app.use('/cart',cartRoute)
+
 const mongoUri = process.env.MONGO_URI;
 
 if (!mongoUri) {
